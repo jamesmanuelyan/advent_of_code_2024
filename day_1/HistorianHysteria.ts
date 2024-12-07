@@ -28,23 +28,29 @@ function compute(inputData: InputData): Results {
     const leftSorted = mergeSort(inputData.left);
     const rightSorted = mergeSort(inputData.right);
 
-    const distance = leftSorted.reduce((acc,curr,i) => acc + Math.abs(rightSorted[i] - curr), 0);
-    
-    let frequency = { };
+    const rightListElementFrequencies = { };
 
     rightSorted.forEach((el,i,arr) => {
         const prevEl: number | null = i > 0 ? arr[i-1] : null;
 
         if (el != prevEl) {
-            frequency[el] = 1;
+            rightListElementFrequencies[el] = 1;
         } else {
-            frequency[el]++;
+            rightListElementFrequencies[el]++;
         }
     });
 
-    let similarity = leftSorted.reduce((acc,curr) => curr in frequency ? acc + curr * frequency[curr] : acc, 0);
+    return leftSorted.reduce((acc,curr,i) => {
 
-    return { distance: distance, similarity: similarity };
+        acc.distance += Math.abs(rightSorted[i] - curr);
+
+        if (curr in rightListElementFrequencies) {
+            acc.similarity += curr * rightListElementFrequencies[curr];
+        }
+
+        return acc;
+
+    }, {distance: 0, similarity: 0});
 }
 
 
