@@ -51,17 +51,17 @@ function isThisReportSafe(report: Array<number>): boolean {
      */
     const dReportMin = Math.min(...dReport);
     const dReportMax = Math.max(...dReport);
-    const isMonotonic = Math.sign(dReportMin) == Math.sign(dReportMax);
+    const isStrictlyMonotonic = Math.sign(dReportMin) == Math.sign(dReportMax);
 
     /**
      * Check that the rates of change are within the limits.
      */
-    if (isMonotonic) {
+    if (isStrictlyMonotonic) {
         const absEdgeGradients = [dReportMin, dReportMax].map(el => Math.abs(el));
 
-        const withinGradientLimits = (Math.min(...absEdgeGradients) >= MIN_RATE) && (Math.max(...absEdgeGradients)) <= MAX_RATE;
+        const isWithinGradientLimits = (Math.min(...absEdgeGradients) >= MIN_RATE) && (Math.max(...absEdgeGradients)) <= MAX_RATE;
 
-        if (withinGradientLimits) {
+        if (isWithinGradientLimits) {
             out = true;
         }
     }
