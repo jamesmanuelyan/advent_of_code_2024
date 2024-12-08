@@ -1,3 +1,9 @@
+/**
+ * mergeSort
+ * ----------------------------------------------------------------
+ * Sorted bruv.
+ * ----------------------------------------------------------------
+ */
 export function mergeSort(arr: Array<number>): Array<number> {
 
     let out: Array<number> = [];
@@ -23,7 +29,14 @@ export function mergeSort(arr: Array<number>): Array<number> {
 }
 
 
-function zipper(a: Array<number>, b: Array<number>): Array<number> {
+/**
+ * zipper
+ * ----------------------------------------------------------------
+ * Combines two sorted lists of ascending numbers into one sorted
+ * list of ascending numbers.
+ * ----------------------------------------------------------------
+ */
+export function zipper(a: Array<number>, b: Array<number>): Array<number> {
 
     const out: Array<number> = [];
 

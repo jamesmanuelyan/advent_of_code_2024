@@ -1,6 +1,6 @@
-import { mergeSort } from "./MergeSort";
+import { mergeSort } from "../utils/MergeSort";
 import { readInputData } from "../utils/ReadInputData"
-import { DataSource, InputDataRows } from "../utils/UtilTypes";
+import { DataSource, InputDataRows, Dictionary } from "../utils/UtilTypes";
 import { ProcessedInputData, Results } from "./Types";
 
 
@@ -31,29 +31,9 @@ function compute(inputData: ProcessedInputData): Results {
     const leftSorted = mergeSort(inputData.left);
     const rightSorted = mergeSort(inputData.right);
 
-    const rightListElementFrequencies = { };
+    const rightListElementFrequencies = elementFrequenciesOfAscendingSortedList(rightSorted);
 
-    rightSorted.forEach((el,i,arr) => {
-        const prevEl: number | null = i > 0 ? arr[i-1] : null;
-
-        if (el != prevEl) {
-            rightListElementFrequencies[el] = 1;
-        } else {
-            rightListElementFrequencies[el]++;
-        }
-    });
-
-    return leftSorted.reduce((acc,curr,i) => {
-
-        acc.distance += Math.abs(rightSorted[i] - curr);
-
-        if (curr in rightListElementFrequencies) {
-            acc.similarity += curr * rightListElementFrequencies[curr];
-        }
-
-        return acc;
-
-    }, {distance: 0, similarity: 0});
+    return calculateDistanceAndSimilarity(leftSorted, rightSorted, rightListElementFrequencies);
 }
 
 
@@ -76,6 +56,40 @@ function processInputData(rawData: InputDataRows): ProcessedInputData {
     });
 
     return out;
+}
+
+
+function elementFrequenciesOfAscendingSortedList(sortedAsc: Array<number>): Dictionary<number> {
+
+    const out = { };
+
+    sortedAsc.forEach((el,i,arr) => {
+        const prevEl: number | null = i > 0 ? arr[i-1] : null;
+
+        if (el != prevEl) {
+            out[el] = 1;
+        } else {
+            out[el]++;
+        }
+    });
+
+    return out;
+}
+
+
+function calculateDistanceAndSimilarity(leftSorted: Array<number>, rightSorted: Array<number>, rightListElementFrequencies: Dictionary<number>): Results {
+
+    return leftSorted.reduce((acc,curr,i) => {
+
+        acc.distance += Math.abs(rightSorted[i] - curr);
+
+        if (curr in rightListElementFrequencies) {
+            acc.similarity += curr * rightListElementFrequencies[curr];
+        }
+
+        return acc;
+
+    }, {distance: 0, similarity: 0});
 }
 
 
