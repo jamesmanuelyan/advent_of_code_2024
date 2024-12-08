@@ -1,6 +1,4 @@
-export type DataSource = "example" | "puzzle";
-
-export interface InputData {
+export interface ProcessedInputData {
     left: Array<number>;
     right: Array<number>;
 }

@@ -1,6 +1,7 @@
 import { mergeSort } from "./MergeSort";
-import { readInputData } from "./ReadInputData";
-import { DataSource, InputData, Results } from "./Types";
+import { readInputData } from "../utils/ReadInputData"
+import { DataSource, InputDataRows } from "../utils/UtilTypes";
+import { ProcessedInputData, Results } from "./Types";
 
 
 async function main() {
@@ -12,9 +13,11 @@ async function main() {
         }
 
         const ds: DataSource = process.argv[2] == 'example' ? 'example' : 'puzzle';
-        const inputData = await readInputData(ds);
+        const dataDir = __dirname + "/../../data";
+        const rawData = await readInputData(dataDir, ds);
+        const processedData = processInputData(rawData);
 
-        const results = compute(inputData);
+        const results = compute(processedData);
         displayResults(results);
 
     } else {
@@ -23,7 +26,7 @@ async function main() {
 }
 
 
-function compute(inputData: InputData): Results {
+function compute(inputData: ProcessedInputData): Results {
 
     const leftSorted = mergeSort(inputData.left);
     const rightSorted = mergeSort(inputData.right);
@@ -59,6 +62,20 @@ function displayResults(results: Results) {
     console.log('Distance: ', results.distance);
     console.log('Similarity: ', results.similarity);
     console.log('-------------------------------------------------------------\n');
+}
+
+
+function processInputData(rawData: InputDataRows): ProcessedInputData {
+
+    const out = { left: [], right: [] };
+
+    rawData.forEach(strRow => {
+        const cols = strRow.split(' ');
+        out.left.push(parseInt(cols[0]));
+        out.right.push(parseInt(cols[cols.length-1]));
+    });
+
+    return out;
 }
 
 
