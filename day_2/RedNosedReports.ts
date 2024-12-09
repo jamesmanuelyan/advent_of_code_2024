@@ -27,10 +27,8 @@ async function main() {
 
 function compute(inputData: ProcessedInputData): Results {
 
-    const numSafeReports = inputData.reduce( (acc,report) => acc + (isThisReportSafe(report) ? 1 : 0), 0);
-
     return {
-        numSafeReports: numSafeReports,
+        numSafeReports: inputData.filter(isThisReportSafe).length,
         numSafeReportsWithProblemDampener: 0,
     }
 }
@@ -45,19 +43,13 @@ function isThisReportSafe(report: Array<number>): boolean {
 
     const dReport = arrayDerivative(report);
 
-    /**
-     * Check that the report is either monotonically
-     * increasing or decreasing.
-     */
-    const dReportMin = Math.min(...dReport);
-    const dReportMax = Math.max(...dReport);
-    const isStrictlyMonotonic = Math.sign(dReportMin) == Math.sign(dReportMax);
+    const gradientDirSum = dReport.reduce((acc,el) => acc+Math.sign(el), 0);
 
-    /**
-     * Check that the rates of change are within the limits.
-     */
+    const isStrictlyMonotonic = Math.abs(gradientDirSum) == dReport.length;
+
     if (isStrictlyMonotonic) {
-        const absEdgeGradients = [dReportMin, dReportMax].map(el => Math.abs(el));
+
+        const absEdgeGradients = [Math.min(...dReport), Math.max(...dReport)].map(Math.abs);
 
         const isWithinGradientLimits = (Math.min(...absEdgeGradients) >= MIN_RATE) && (Math.max(...absEdgeGradients)) <= MAX_RATE;
 
@@ -86,14 +78,7 @@ function displayResults(results: Results) {
 
 function processInputData(rawData: InputDataRows): ProcessedInputData {
 
-    const out = [];
-
-    rawData.forEach(strRow => {
-        const cols = strRow.split(' ');
-        out.push( cols.map(el => parseInt(el)) );
-    });
-
-    return out;
+    return rawData.map( strRow => strRow.split(' ').map(el => parseInt(el)) );
 }
 
 
